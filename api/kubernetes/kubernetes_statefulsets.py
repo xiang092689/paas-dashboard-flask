@@ -5,8 +5,6 @@ from kubernetes import config, client
 
 statefulsets_api = Blueprint('statefulsets', __name__)
 
-config.load_kube_config()
-
 v1 = client.AppsV1Api()
 
 
