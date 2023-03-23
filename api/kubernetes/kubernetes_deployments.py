@@ -1,0 +1,54 @@
+import json
+
+from flask import Blueprint, jsonify, request
+from kubernetes import config, client
+
+deployments_api = Blueprint('deployments', __name__)
+
+config.load_kube_config()
+
+v1 = client.AppsV1Api()
+
+
+@deployments_api.route('', methods=['GET'])
+@deployments_api.route('/namespaces/<namespace>', methods=['GET'])
+def get_deployments(namespace=None):
+    # If a namespace was specified, list deployments for that namespace only
+    # Otherwise, list deployments for all namespaces
+    if namespace:
+        deployments_list = v1.list_namespaced_deployment(namespace, watch=False)
+    else:
+        deployments_list = v1.list_deployment_for_all_namespaces(watch=False)
+    return jsonify(deployments_list.to_dict())
+
+
+@deployments_api.route('/namespaces/<namespace>/deployments/<deployment_name>', methods=['POST'])
+def patch_deployment(namespace, deployment_name):
+    # Get the patch data from the request body
+    patch_data = request.get_data()
+
+    # Apply the patch to the deployment
+    v1.patch_namespaced_deployment(
+        name=deployment_name,
+        namespace=namespace,
+        body=json.loads(patch_data),
+    )
+
+    # Return a success message
+    return 'Deployment patched successfully'
+
+
+@deployments_api.route('/namespaces/<string:namespace>/deployments/<string:deployment_name>/ready-check',
+                       methods=['POST'])
+def deployment_ready_check(namespace, deployment_name):
+    image = request.args.get('image')
+    deployment_list = v1.list_namespaced_deployment(namespace)
+    deployment = next((d for d in deployment_list if d.metadata.name == deployment_name), None)
+    if deployment is None:
+        return jsonify({}), 404
+    if image and deployment.spec.template.spec.containers[0].image != image:
+        return jsonify({}), 406
+    if deployment.status and deployment.status.available_replicas != deployment.status.replicas:
+        return jsonify({'ready': False}), 200
+    else:
+        return jsonify({'ready': True}), 200

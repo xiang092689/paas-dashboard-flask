@@ -1,0 +1,11 @@
+autofix: false
+
+ignore:
+  - .git/
+  - static/css/mdb*
+  - static/js/mdb*
+
+rules:
+  end-of-file:
+    enable: true
+    single-new-line: true
