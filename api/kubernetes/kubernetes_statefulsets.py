@@ -29,7 +29,7 @@ def patch_statefulset(namespace, statefulset_name):
     v1.patch_namespaced_stateful_set(
         name=statefulset_name,
         namespace=namespace,
-        body=json.loads(patch_data),
+        body=patch_data,
     )
 
     # Return a success message
@@ -41,7 +41,7 @@ def patch_statefulset(namespace, statefulset_name):
 def ready_check(namespace, stateful_set_name):
     image = request.args.get('image')
     stateful_sets = v1.list_namespaced_stateful_set(namespace, watch=False)
-    stateful_set = next((s for s in stateful_sets if s.metadata.name == stateful_set_name), None)
+    stateful_set = next((s for s in stateful_sets.items() if s.metadata.name == stateful_set_name), None)
     if stateful_set is None:
         return jsonify({}), 404
     if image and stateful_set.spec.template.spec.containers[0].image != image:

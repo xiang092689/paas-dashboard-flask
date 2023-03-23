@@ -29,7 +29,7 @@ def patch_deployment(namespace, deployment_name):
     v1.patch_namespaced_deployment(
         name=deployment_name,
         namespace=namespace,
-        body=json.loads(patch_data),
+        body=patch_data,
     )
 
     # Return a success message
@@ -41,7 +41,7 @@ def patch_deployment(namespace, deployment_name):
 def deployment_ready_check(namespace, deployment_name):
     image = request.args.get('image')
     deployment_list = v1.list_namespaced_deployment(namespace)
-    deployment = next((d for d in deployment_list if d.metadata.name == deployment_name), None)
+    deployment = next((d for d in deployment_list.items if d.metadata.name == deployment_name), None)
     if deployment is None:
         return jsonify({}), 404
     if image and deployment.spec.template.spec.containers[0].image != image:
