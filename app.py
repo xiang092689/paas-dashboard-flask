@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from api.kafka.kafka_route import kafka_route
 from api.kubernetes.kubernetes_route import kubernetes_route
+from api.pulsar.pulsar_route import pulsar_route
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 
@@ -13,6 +14,7 @@ CORS(app)
 
 app.register_blueprint(kafka_route, url_prefix='/api/kafka')
 app.register_blueprint(kubernetes_route, url_prefix='/api/kubernetes')
+app.register_blueprint(pulsar_route, url_prefix='/api/pulsar')
 
 
 @app.route('/', methods=['GET'])
