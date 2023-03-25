@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class PulsarInstance:
     name: str = ""
+    host: str = ""
     web_port: str = ""
     tcp_port: str = ""
 

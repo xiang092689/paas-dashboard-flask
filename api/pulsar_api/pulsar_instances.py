@@ -26,6 +26,7 @@ for key, value in env_map.items():
     elif conf_property == 'TCP_PORT':
         pulsar_instance.tcp_port = value
 
+
 @instance_api.route('', methods=['GET'])
 def get_instance_list():
     return jsonify(list(pulsar_instance_map.values()))
