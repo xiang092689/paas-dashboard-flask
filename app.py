@@ -18,7 +18,23 @@ app.register_blueprint(pulsar_route, url_prefix='/api/pulsar')
 
 
 @app.route('/', methods=['GET'])
+@app.route('/kafka', methods=['GET'])
+@app.route('/kubernetes', methods=['GET'])
+@app.route('/mongo', methods=['GET'])
+@app.route('/pulsar', methods=['GET'])
+@app.route('/redis', methods=['GET'])
+@app.route('/rocketmq', methods=['GET'])
 def redirect_to_index():
+    return send_from_directory(root, 'index.html')
+
+
+@app.route('/kafka/<path>', methods=['GET'])
+@app.route('/kubernetes/<path>', methods=['GET'])
+@app.route('/mongo/<path>', methods=['GET'])
+@app.route('/pulsar/<path>', methods=['GET'])
+@app.route('/redis/<path>', methods=['GET'])
+@app.route('/rocketmq/<path>', methods=['GET'])
+def redirect_to_index_next(path):
     return send_from_directory(root, 'index.html')
 
 
