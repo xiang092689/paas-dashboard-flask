@@ -13,5 +13,9 @@ jobs:
         run: pip3 install -r requirements.txt
       - name: install pylint
         run: pip3 install pylint
-      - name: pylint
-        run: pylint --rcfile=.pylintrc .
+      - name: pylint api
+        run: pylint --rcfile=.pylintrc api
+      - name: pylint module
+        run: pylint --rcfile=.pylintrc module
+      - name: pylint debug
+        run: pylint --rcfile=.pylintrc debug

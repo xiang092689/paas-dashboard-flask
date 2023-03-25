@@ -3,9 +3,9 @@ import os
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 
-from api.kafka.kafka_route import kafka_route
-from api.kubernetes.kubernetes_route import kubernetes_route
-from api.pulsar.pulsar_route import pulsar_route
+from api.kafka_api.kafka_route import kafka_route
+from api.kubernetes_api.kubernetes_route import kubernetes_route
+from api.pulsar_api.pulsar_route import pulsar_route
 
 root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 

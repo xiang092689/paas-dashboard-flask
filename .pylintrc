@@ -1,4 +1,7 @@
 [MASTER]
+enable=unused-import,unused-variable
 ignore=static,.git
 [MESSAGES CONTROL]
-disable=invalid-name
+disable=R0801,import-error,invalid-name,missing-module-docstring,missing-class-docstring,missing-function-docstring,no-name-in-module
+[FORMAT]
+max-line-length=120

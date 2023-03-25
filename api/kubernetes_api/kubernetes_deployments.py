@@ -1,15 +1,13 @@
-import json
-
 from flask import Blueprint, jsonify, request
-from kubernetes import config, client
+from kubernetes import client
 
 deployments_api = Blueprint('deployments', __name__)
 
 v1 = client.AppsV1Api()
 
 
-@deployments_api.route('', methods=['GET'])
-@deployments_api.route('/namespaces/<namespace>', methods=['GET'])
+@deployments_api.route('/deployments', methods=['GET'])
+@deployments_api.route('/namespaces/<namespace>/deployments', methods=['GET'])
 def get_deployments(namespace=None):
     # If a namespace was specified, list deployments for that namespace only
     # Otherwise, list deployments for all namespaces
@@ -17,7 +15,7 @@ def get_deployments(namespace=None):
         deployments_list = v1.list_namespaced_deployment(namespace, watch=False)
     else:
         deployments_list = v1.list_deployment_for_all_namespaces(watch=False)
-    return jsonify(deployments_list.to_dict())
+    return jsonify([deployment.to_dict() for deployment in deployments_list.items])
 
 
 @deployments_api.route('/namespaces/<namespace>/deployments/<deployment_name>', methods=['POST'])
@@ -48,5 +46,4 @@ def deployment_ready_check(namespace, deployment_name):
         return jsonify({}), 406
     if deployment.status and deployment.status.available_replicas != deployment.status.replicas:
         return jsonify({'ready': False}), 200
-    else:
-        return jsonify({'ready': True}), 200
+    return jsonify({'ready': True}), 200

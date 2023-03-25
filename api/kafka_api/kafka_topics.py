@@ -1,7 +1,7 @@
 from kafka import KafkaAdminClient
 from flask import Blueprint, jsonify
 
-from api.kafka.kafka_instances import kafka_instance_map
+from api.kafka_api.kafka_instances import kafka_instance_map
 
 topics_api = Blueprint('topics', __name__)
 
@@ -14,7 +14,7 @@ def get_topics(instance):
     bootstrap_servers = instance_config.bootstrapServers
     admin_client = KafkaAdminClient(
         bootstrap_servers=bootstrap_servers,
-        client_id='flask-kafka-admin-client'
+        client_id='flask-kafka_api-admin-client'
     )
     topic_names = admin_client.list_topics()
     topic_list = [topic for topic in topic_names if not topic[1].internal]

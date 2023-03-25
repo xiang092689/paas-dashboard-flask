@@ -1,8 +1,8 @@
 from flask import Blueprint
 
-from api.kafka.kafka_consumer_groups import consumer_groups_api
-from api.kafka.kafka_instances import instance_api
-from api.kafka.kafka_topics import topics_api
+from api.kafka_api.kafka_consumer_groups import consumer_groups_api
+from api.kafka_api.kafka_instances import instance_api
+from api.kafka_api.kafka_topics import topics_api
 
 kafka_route = Blueprint('kafka_route', __name__)
 kafka_route.register_blueprint(instance_api, url_prefix='/instances')

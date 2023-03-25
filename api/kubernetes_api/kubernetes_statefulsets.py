@@ -1,23 +1,21 @@
-import json
-
 from flask import Blueprint, jsonify, request
-from kubernetes import config, client
+from kubernetes import client
 
 statefulsets_api = Blueprint('statefulsets', __name__)
 
 v1 = client.AppsV1Api()
 
 
-@statefulsets_api.route('', methods=['GET'])
-@statefulsets_api.route('/namespaces/<namespace>', methods=['GET'])
+@statefulsets_api.route('/stateful-sets', methods=['GET'])
+@statefulsets_api.route('/namespaces/<namespace>/stateful-sets', methods=['GET'])
 def get_deployments(namespace=None):
     # If a namespace was specified, list deployments for that namespace only
     # Otherwise, list deployments for all namespaces
     if namespace:
-        deployments_list = v1.list_namespaced_stateful_set(namespace, watch=False)
+        statefulsets_list = v1.list_namespaced_stateful_set(namespace, watch=False)
     else:
-        deployments_list = v1.list_stateful_set_for_all_namespaces(watch=False)
-    return jsonify(deployments_list.to_dict())
+        statefulsets_list = v1.list_stateful_set_for_all_namespaces(watch=False)
+    return jsonify([statefulset.to_dict() for statefulset in statefulsets_list.items])
 
 
 @statefulsets_api.route('/namespaces/<namespace>/stateful-sets/<statefulset_name>', methods=['POST'])
@@ -48,5 +46,4 @@ def ready_check(namespace, stateful_set_name):
         return jsonify({}), 406
     if stateful_set.status and stateful_set.status.available_replicas != stateful_set.status.replicas:
         return jsonify({'ready': False}), 200
-    else:
-        return jsonify({'ready': True}), 200
+    return jsonify({'ready': True}), 200
