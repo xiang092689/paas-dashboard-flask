@@ -17,5 +17,4 @@ def get_topics(instance):
         client_id='flask-kafka_api-admin-client'
     )
     topic_names = admin_client.list_topics()
-    topic_list = [topic for topic in topic_names if not topic[1].internal]
-    return jsonify([topic[0] for topic in topic_list])
+    return jsonify(topic_names)

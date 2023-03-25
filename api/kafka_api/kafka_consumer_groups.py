@@ -17,5 +17,4 @@ def get_consumer_groups(instance):
         client_id='flask-kafka_api-admin-client'
     )
     groups = admin_client.list_consumer_groups()
-    consumer_group_list = [group for group in groups if group[0] == instance]
-    return jsonify([group[1] for group in consumer_group_list])
+    return jsonify(groups)

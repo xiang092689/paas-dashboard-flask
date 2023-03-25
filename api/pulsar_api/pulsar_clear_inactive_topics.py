@@ -1,10 +1,21 @@
 import threading
 from flask import Blueprint
 
-from pulsar_instances import pulsar_instance_map
 from pulsar_admin.p_admin import PulsarAdmin
 
-pulsar_clear_inactive_topics_api = Blueprint('instances', __name__)
+from api.pulsar_api.pulsar_instances import pulsar_instance_map
+
+pulsar_clear_inactive_topics_api = Blueprint('clear_inactive_topic', __name__)
+
+
+@pulsar_clear_inactive_topics_api.route('/<instance>/clear-inactive-topic', methods=['POST'])
+def clear_inactive_topic(instance=None):
+    instance_info = pulsar_instance_map.get(instance)
+    if instance_info is None:
+        return {'message': f'Instance "{instance}" not found'}, 404
+    pulsar_admin = PulsarAdmin(instance_info.host, instance_info.web_port)
+    threading.Thread(target=do_clear_inactive_topic, args=[pulsar_admin]).start()
+    return "OK"
 
 
 def do_clear_inactive_topic(pulsar_admin: PulsarAdmin):
@@ -35,12 +46,3 @@ def decide_whether_clear_inactive_topic(padmin: PulsarAdmin, tenant: str, namesp
     if not padmin.persistent_topics.get_subscription(tenant, namespace, topic):
         print(f'processing inactive topic {tenant}/{namespace}/{topic}')
         padmin.persistent_topics.delete_partitioned_topic(tenant, namespace, topic)
-
-
-@pulsar_clear_inactive_topics_api.route('/<instance>/clear-inactive-topic', methods=['GET'])
-def clear_inactive_topic(instance=None):
-    instance_info = pulsar_instance_map.get(instance)
-    if instance_info is None:
-        return
-    pulsar_admin = PulsarAdmin(instance_info.host, instance_info.web_port)
-    threading.Thread(target=do_clear_inactive_topic, args=[pulsar_admin]).start()
