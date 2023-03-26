@@ -8,8 +8,10 @@ instance_api = Blueprint('instances', __name__)
 
 pulsar_instance_map = {}
 
-# Get all Kafka instances
-# eg: KAFKA_DEFAULT_BOOTSTRAP_SERVERS=localhost:9092
+# Get all Pulsar instances
+# eg: PULSAR_HOST=localhost
+#     PULSAR_WEB_PORT=8080
+#     PULSAR_TCP_PORT=6650
 prefix_len = len('PULSAR_')
 env_map = {k[prefix_len:]: v for k, v in os.environ.items() if k.startswith('PULSAR_')}
 for key, value in env_map.items():
